@@ -1,0 +1,14 @@
+<nav class="glass-panel" style="margin: 1rem; padding: 1rem; display: flex; justify-content: space-between; align-items: center; border-radius: 8px;">
+  <a routerLink="/" style="font-family: 'Outfit'; font-size: 1.8rem; font-weight: 800; color: var(--accent-primary); letter-spacing: 2px;">NEO4FLIX</a>
+  
+  <div style="display: flex; gap: 1.5rem; align-items: center;">
+    <a routerLink="/recommendations" style="font-weight: 600;">Recommandations</a>
+    <a *ngIf="isLoggedIn" routerLink="/profile" style="font-weight: 600; color: var(--text-title);">Mon Profil</a>
+    <a *ngIf="!isLoggedIn" routerLink="/login" class="glass-button">Connexion</a>
+    <button *ngIf="isLoggedIn" (click)="logout()" class="glass-button" style="background: rgba(255,100,100,0.1); color: #ff6b6b; border: 1px solid #ff6b6b;">Déconnexion</button>
+  </div>
+</nav>
+
+<main class="animate-fade-in" style="padding: 1rem; max-width: 1200px; margin: 0 auto;">
+  <router-outlet></router-outlet>
+</main>

@@ -1,0 +1,76 @@
+<div style="max-width: 1000px; margin: 2rem auto;">
+  <h1 style="font-size: 2.5rem; text-align: center; margin-bottom: 2rem;">Mon <span style="color: var(--accent-primary);">Espace</span></h1>
+
+  <!-- Tabs Navigation -->
+  <div style="display: flex; gap: 1rem; margin-bottom: 2rem; justify-content: center;">
+    <button class="glass-button" [style.background]="activeTab === 'rated' ? 'var(--accent-primary)' : 'var(--glass-bg)'" [style.color]="activeTab === 'rated' ? '#000' : 'var(--text-title)'" (click)="activeTab = 'rated'">Films Notés</button>
+    <button class="glass-button" [style.background]="activeTab === 'watchlist' ? 'var(--accent-primary)' : 'var(--glass-bg)'" [style.color]="activeTab === 'watchlist' ? '#000' : 'var(--text-title)'" (click)="activeTab = 'watchlist'">Ma Watchlist</button>
+    <button class="glass-button" [style.background]="activeTab === 'friends' ? 'var(--accent-primary)' : 'var(--glass-bg)'" [style.color]="activeTab === 'friends' ? '#000' : 'var(--text-title)'" (click)="activeTab = 'friends'">Mes Amis</button>
+  </div>
+
+  <!-- Rated Movies Tab -->
+  <div *ngIf="activeTab === 'rated'" class="animate-fade-in">
+    <div *ngIf="ratedMovies.length === 0" style="text-align: center; margin-top: 2rem; color: var(--text-main);">
+      Vous n'avez noté aucun film.
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
+      <div *ngFor="let movie of ratedMovies" class="glass-panel" style="padding: 0; overflow: hidden;">
+        <div style="height: 280px; background-color: #1a1a24; background-image: url('{{ movie.posterUrl || 'https://via.placeholder.com/200x300/1a1a24/66fcf1?text=Affiche' }}'); background-size: cover; background-position: center; cursor: pointer;" [routerLink]="['/movie', movie.id]"></div>
+        <div style="padding: 1rem; text-align: center;">
+          <h3 style="font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.5rem;">{{ movie.title }}</h3>
+
+          <!-- Affichage de la note -->
+          <div style="margin-bottom: 0.75rem;">
+            <span style="font-size: 1rem; color: var(--accent-primary); font-weight: 700;">
+              Note : {{ movie.userScore }}/5
+            </span>
+          </div>
+
+          <button (click)="removeRating(movie.id)" style="background: rgba(255, 74, 74, 0.2); color: #ff4a4a; border: 1px solid #ff4a4a; padding: 0.4rem 1rem; border-radius: 4px; cursor: pointer; width: 100%; font-size: 0.85rem;">Retirer Note</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Watchlist Tab -->
+  <div *ngIf="activeTab === 'watchlist'" class="animate-fade-in">
+    <div *ngIf="watchlist.length === 0" style="text-align: center; margin-top: 2rem; color: var(--text-main);">
+      Votre Watchlist est vide.
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
+      <div *ngFor="let movie of watchlist" class="glass-panel" style="padding: 0; overflow: hidden;">
+        <div style="height: 300px; background-color: #1a1a24; background-image: url('{{ movie.posterUrl || 'https://via.placeholder.com/200x300/1a1a24/66fcf1?text=Affiche' }}'); background-size: cover; background-position: center; cursor: pointer;" [routerLink]="['/movie', movie.id]"></div>
+        <div style="padding: 1rem; text-align: center;">
+          <h3 style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1rem;">{{ movie.title }}</h3>
+          <button (click)="removeFromWatchlist(movie.id)" style="background: rgba(255, 74, 74, 0.2); color: #ff4a4a; border: 1px solid #ff4a4a; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; width: 100%;">Enlever</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Friends Tab -->
+  <div *ngIf="activeTab === 'friends'" class="animate-fade-in">
+    <div class="glass-panel" style="margin-bottom: 2rem; display: flex; gap: 1rem; align-items: flex-end;">
+      <div style="flex: 1; text-align: left;">
+        <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; display: block;">Ajouter un ami</label>
+        <input type="text" [(ngModel)]="newFriendUsername" class="glass-input" placeholder="nom d'utilisateur" style="margin-bottom: 0;" />
+      </div>
+      <button (click)="addFriend()" class="glass-button">Ajouter</button>
+    </div>
+    <p *ngIf="friendMessage" style="color: var(--accent-primary); margin-bottom: 1rem;">{{ friendMessage }}</p>
+
+    <div *ngIf="friends.length === 0" style="text-align: center; margin-top: 2rem; color: var(--text-main);">
+      Vous n'avez pas encore ajouté d'amis.
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
+      <div *ngFor="let friend of friends" class="glass-panel" style="text-align: center;">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--accent-secondary); margin: 0 auto 1rem auto; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #fff; font-weight: bold;">
+          {{ friend.username.charAt(0).toUpperCase() }}
+        </div>
+        <h3 style="margin-bottom: 1rem;">{{ friend.username }}</h3>
+        <button (click)="removeFriend(friend.username)" style="background: rgba(255, 74, 74, 0.2); color: #ff4a4a; border: 1px solid #ff4a4a; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; width: 100%;">Retirer</button>
+      </div>
+    </div>
+  </div>
+</div>

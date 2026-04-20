@@ -1,0 +1,67 @@
+<div *ngIf="movie" class="glass-panel" style="max-width: 900px; margin: 2rem auto; padding: 2rem; display: flex; gap: 2rem; flex-wrap: wrap;">
+  
+  <div style="flex: 1; min-width: 300px;">
+    <div style="width: 100%; height: 450px; border-radius: 8px; background-color: #1a1a24; background-image: url('{{ movie.posterUrl || 'https://via.placeholder.com/400x550/1a1a24/66fcf1?text=Affiche' }}'); background-size: cover; background-position: center; border: 1px solid var(--glass-border);"></div>
+  </div>
+
+  <div style="flex: 2; min-width: 300px;">
+    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">{{ movie.title }}</h1>
+    <p style="color: var(--text-main); margin-bottom: 1rem;">Sortie: {{ movie.releaseDate || 'N/A' }}</p>
+    
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+      <span *ngFor="let genre of movie.genres" style="padding: 0.3rem 0.8rem; background: var(--glass-bg); border: 1px solid var(--accent-secondary); border-radius: 20px; color: var(--accent-primary); font-size: 0.85rem;">
+        {{ genre.name }}
+      </span>
+    </div>
+
+    <h3 style="color: var(--text-title); margin-bottom: 0.5rem;">Synopsis</h3>
+    <p style="color: var(--text-main); font-size: 1.05rem; line-height: 1.6; margin-bottom: 2rem;">
+      {{ movie.description || "Aucune description disponible pour ce film." }}
+    </p>
+
+    <div style="margin-bottom: 2rem;">
+        <button (click)="toggleWatchlist()" class="glass-button" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--accent-secondary);">Gestion Watchlist (Ajouter / Retirer)</button>
+        <p *ngIf="watchlistMsg" style="color: var(--accent-primary); margin-top: 0.5rem; font-size: 0.9rem;">{{ watchlistMsg }}</p>
+    </div>
+
+    <!-- Partage à un ami -->
+    <div class="glass-panel" style="padding: 1.5rem; background: rgba(0,0,0,0.2); margin-bottom: 2rem;">
+      <h3 style="margin-bottom: 1rem; font-size: 1.2rem;">📤 Partager avec un ami</h3>
+      <div style="display: flex; gap: 1rem; align-items: flex-end;">
+        <div style="flex: 1; text-align: left;">
+          <input type="text" [(ngModel)]="shareUsername" class="glass-input" placeholder="Nom d'utilisateur de l'ami..." style="margin-bottom: 0;" />
+        </div>
+        <button (click)="shareWithFriend()" class="glass-button" style="white-space: nowrap;">Envoyer</button>
+      </div>
+      <p *ngIf="shareMsg" [style.color]="shareMsg.includes('succès') ? 'var(--accent-primary)' : '#ff4a4a'"
+         style="margin-top: 0.5rem; font-size: 0.9rem;" class="animate-fade-in">{{ shareMsg }}</p>
+    </div>
+
+    <!-- Système de notation -->
+    <div class="glass-panel" style="padding: 1.5rem; background: rgba(0,0,0,0.2);">
+      <h3 style="margin-bottom: 1rem; font-size: 1.2rem;">Notez ce film</h3>
+      
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <input type="range" min="0" max="5" step="0.5" [(ngModel)]="userRating" style="flex: 1;" />
+        <span style="font-size: 1.5rem; color: var(--accent-primary); font-weight: 800; min-width: 40px;">{{ userRating }}</span>
+      </div>
+
+      <button (click)="submitRating()" class="glass-button" style="margin-top: 1rem; width: 100%;">Envoyer la note</button>
+
+      <p *ngIf="ratingMessage" style="color: var(--accent-primary); margin-top: 1rem; font-size: 0.9rem;" class="animate-fade-in">
+        {{ ratingMessage }}
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<div *ngIf="!movie && !error" style="text-align: center; margin-top: 4rem;">
+  <h2>Chargement...</h2>
+</div>
+
+<div *ngIf="error" style="text-align: center; margin-top: 4rem; color: #ff4a4a;">
+  <h2>Film introuvable</h2>
+  <p>{{ error }}</p>
+  <button routerLink="/" class="glass-button" style="margin-top: 1rem;">Retour à l'accueil</button>
+</div>

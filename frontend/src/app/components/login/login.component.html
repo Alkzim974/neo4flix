@@ -1,0 +1,34 @@
+<div class="glass-panel" style="max-width: 400px; margin: 4rem auto; text-align: center;">
+  <h2>Connexion</h2>
+  <p style="margin-bottom: 2rem; color: var(--text-main);">Accédez à vos recommandations de films</p>
+
+  <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+    <div style="text-align: left;">
+      <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; display: block;">Nom d'utilisateur</label>
+      <input type="text" [(ngModel)]="credentials.username" name="username" class="glass-input" required />
+    </div>
+
+    <div style="text-align: left; position: relative;">
+      <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; display: block;">Mot de passe</label>
+      <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="credentials.password" name="password" class="glass-input" required style="padding-right: 60px;" />
+      <button type="button" (click)="showPassword = !showPassword" style="position: absolute; right: 10px; top: 32px; background: none; border: none; color: var(--accent-primary); cursor: pointer; font-size: 0.85rem; font-weight: 600;">
+        {{ showPassword ? 'Cacher' : 'Voir' }}
+      </button>
+    </div>
+
+    <div *ngIf="mfaRequired" style="text-align: left; margin-top: 1rem;" class="animate-fade-in">
+      <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; display: block; color: var(--accent-primary);">Code 2FA (Google Auth)</label>
+      <input type="number" [(ngModel)]="credentials.mfaCode" name="mfaCode" class="glass-input" placeholder="000000" />
+    </div>
+
+    <div *ngIf="errorMessage" style="color: #ff4a4a; margin-bottom: 1rem; font-size: 0.9rem;">
+      {{ errorMessage }}
+    </div>
+
+    <button type="submit" class="glass-button" style="width: 100%; margin-top: 1rem;">Se connecter</button>
+  </form>
+
+  <p style="margin-top: 2rem; font-size: 0.9rem;">
+    Pas encore de compte ? <a routerLink="/register">S'inscrire</a>
+  </p>
+</div>

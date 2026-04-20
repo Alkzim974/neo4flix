@@ -1,0 +1,42 @@
+<div style="text-align: center; margin-bottom: 2rem;">
+  <h1 style="font-size: 2.5rem;"><span style="color: var(--accent-primary);">Recommandations</span></h1>
+  <p style="color: var(--text-main);">Découvrez des films basés sur vos goûts et ceux de vos amis.</p>
+</div>
+
+<!-- Onglets -->
+<div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;">
+  <button class="glass-button"
+    [style.background]="activeTab === 'personal' ? 'var(--accent-primary)' : 'var(--glass-bg)'"
+    [style.color]="activeTab === 'personal' ? '#000' : 'var(--text-title)'"
+    (click)="setTab('personal')">🎯 Pour moi</button>
+  <button class="glass-button"
+    [style.background]="activeTab === 'friends' ? 'var(--accent-primary)' : 'var(--glass-bg)'"
+    [style.color]="activeTab === 'friends' ? '#000' : 'var(--text-title)'"
+    (click)="setTab('friends')">👥 Mes Amis aiment</button>
+  <button class="glass-button"
+    [style.background]="activeTab === 'shared' ? 'var(--accent-primary)' : 'var(--glass-bg)'"
+    [style.color]="activeTab === 'shared' ? '#000' : 'var(--text-title)'"
+    (click)="setTab('shared')">📩 Partagés avec moi</button>
+</div>
+
+<!-- Contenu des onglets -->
+<div *ngIf="movies.length === 0" style="text-align: center; margin-top: 4rem; color: var(--text-main);">
+  <h3 *ngIf="activeTab === 'personal'">Notez des films (≥ 3.5⭐) pour recevoir des recommandations.</h3>
+  <h3 *ngIf="activeTab === 'friends'">Vos amis n'ont pas encore noté de films.</h3>
+  <h3 *ngIf="activeTab === 'shared'">Personne ne vous a encore partagé de film.</h3>
+  <button routerLink="/" class="glass-button" style="margin-top: 1rem;">Retour à l'accueil</button>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
+  <div *ngFor="let movie of movies" class="glass-panel animate-fade-in"
+    style="padding: 0; overflow: hidden; cursor: pointer; transition: transform var(--transition-speed) ease;"
+    [routerLink]="['/movie', movie.id]"
+    onMouseOver="this.style.transform='translateY(-10px)'"
+    onMouseOut="this.style.transform='translateY(0)'">
+    <div style="height: 300px; background-color: #1a1a24; background-image: url('{{ movie.posterUrl || 'https://via.placeholder.com/200x300/1a1a24/66fcf1?text=Affiche' }}'); background-size: cover; background-position: center;"></div>
+    <div style="padding: 1rem;">
+      <h3 style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.5rem;">{{ movie.title }}</h3>
+      <p *ngIf="movie.releaseDate" style="font-size: 0.8rem; color: var(--text-main);">📅 {{ movie.releaseDate }}</p>
+    </div>
+  </div>
+</div>

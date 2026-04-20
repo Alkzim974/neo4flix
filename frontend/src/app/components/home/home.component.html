@@ -1,0 +1,65 @@
+<div style="text-align: center; margin-bottom: 2rem;">
+  <h1 style="font-size: 3rem; margin-bottom: 0.5rem; letter-spacing: -1px;">Découvrez des films <span style="color: var(--accent-primary);">captivants</span></h1>
+  <p style="font-size: 1.1rem; color: var(--text-main);">Basé sur le moteur de recommandation Neo4j GDS.</p>
+</div>
+
+<!-- Recherche Avancée -->
+<div class="glass-panel" style="max-width: 800px; margin: 0 auto 3rem auto; padding: 1.5rem;">
+  <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+    <div style="flex: 2; min-width: 180px; text-align: left;">
+      <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-main); display: block; margin-bottom: 0.4rem;">Titre</label>
+      <input type="text" [(ngModel)]="searchTitle" class="glass-input" placeholder="ex: Inception..." style="margin-bottom: 0;" />
+    </div>
+    <div style="flex: 1; min-width: 140px; text-align: left;">
+      <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-main); display: block; margin-bottom: 0.4rem;">Genre</label>
+      <input type="text" [(ngModel)]="searchGenre" class="glass-input" placeholder="ex: Action..." style="margin-bottom: 0;" />
+    </div>
+    <div style="flex: 1; min-width: 120px; text-align: left;">
+      <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-main); display: block; margin-bottom: 0.4rem;">Année</label>
+      <input type="text" [(ngModel)]="searchYear" class="glass-input" placeholder="ex: 2023..." style="margin-bottom: 0;" maxlength="4" />
+    </div>
+    <button (click)="onAdvancedSearch()" class="glass-button" style="white-space: nowrap;">Rechercher</button>
+    <button (click)="resetSearch()" class="glass-button" style="background: rgba(255,255,255,0.07); color: white; white-space: nowrap;">Réinitialiser</button>
+  </div>
+</div>
+
+<!-- Message si non connecté -->
+<div *ngIf="!isLoggedIn" style="text-align: center; margin-top: 4rem;">
+  <div class="glass-panel" style="max-width: 500px; margin: 0 auto; padding: 3rem;">
+    <h2 style="font-size: 1.8rem; margin-bottom: 1rem;">Bienvenue sur <span style="color: var(--accent-primary);">Neo4flix</span></h2>
+    <p style="color: var(--text-main); margin-bottom: 2rem;">Connectez-vous pour accéder au catalogue complet et recevoir des recommandations personnalisées.</p>
+    <a routerLink="/login" class="glass-button" style="display: inline-block;">Se connecter</a>
+    <span style="margin: 0 1rem; color: var(--text-main);">ou</span>
+    <a routerLink="/register" class="glass-button" style="display: inline-block; background: rgba(255,255,255,0.07);">S'inscrire</a>
+  </div>
+</div>
+
+<!-- Grille de Films -->
+<div *ngIf="isLoggedIn">
+  <p *ngIf="searchLabel" style="text-align:center; color: var(--accent-primary); margin-bottom: 1.5rem; font-weight: 600;">{{ searchLabel }}</p>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem;">
+    <div *ngFor="let movie of movies" class="glass-panel" style="padding: 0; overflow: hidden; cursor: pointer; transition: transform var(--transition-speed) ease;" [routerLink]="['/movie', movie.id]" onMouseOver="this.style.transform='translateY(-10px)'" onMouseOut="this.style.transform='translateY(0)'">
+      <div style="height: 350px; background-color: #1a1a24; background-image: url('{{ movie.posterUrl || 'https://via.placeholder.com/250x350/1a1a24/66fcf1?text=Affiche+Non+Trouvée' }}'); background-size: cover; background-position: center;"></div>
+      <div style="padding: 1.5rem;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ movie.title }}</h3>
+        <p style="font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.5rem;">
+          <span *ngIf="movie.releaseDate" style="margin-right: 1rem;">📅 {{ movie.releaseDate }}</span>
+          Note: <strong style="color: var(--accent-primary);">{{ movie.averageRating | number:'1.1-1' }}/5</strong>
+        </p>
+
+        <!-- Note personnelle -->
+        <p *ngIf="movie.userScore" style="font-size: 0.85rem; color: #FFD700; font-weight: bold; margin-bottom: 0.5rem;">
+          ⭐ Ma note : {{ movie.userScore }}/5
+        </p>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <span *ngFor="let genre of movie.genres" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; background: var(--glass-bg); border: 1px solid var(--accent-secondary); border-radius: 4px; color: var(--accent-primary);">{{ genre.name }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="movies.length === 0" style="text-align: center; margin-top: 4rem; color: var(--text-main);">
+    <h2>Aucun film trouvé</h2>
+    <p>Essayez d'autres critères de recherche.</p>
+  </div>
+</div>

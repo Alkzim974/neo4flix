@@ -1,0 +1,56 @@
+<div class="glass-panel" style="max-width: 450px; margin: 4rem auto; text-align: center;">
+  <h2>Créer un compte</h2>
+  <p style="margin-bottom: 2rem; color: var(--text-main);">Rejoignez l'expérience Neo4flix</p>
+
+  <form *ngIf="!qrCodeUrl" (ngSubmit)="onSubmit()" #registerForm="ngForm">
+    <div style="text-align: left;">
+      <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; display: block;">Nom d'utilisateur</label>
+      <input type="text" [(ngModel)]="userData.username" name="username" class="glass-input" required />
+    </div>
+
+    <div style="text-align: left;">
+      <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; display: block;">Adresse E-mail</label>
+      <input type="email" [(ngModel)]="userData.email" name="email" class="glass-input" required />
+    </div>
+
+    <div style="text-align: left; position: relative;">
+      <label style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; display: block;">Mot de passe</label>
+      <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="userData.password" name="password" class="glass-input" required style="padding-right: 60px;" />
+      <button type="button" (click)="showPassword = !showPassword" style="position: absolute; right: 10px; top: 32px; background: none; border: none; color: var(--accent-primary); cursor: pointer; font-size: 0.85rem; font-weight: 600;">
+        {{ showPassword ? 'Cacher' : 'Voir' }}
+      </button>
+      <small style="color: var(--text-main); display: block; margin-bottom: 1rem;">Au moins 8 caractères</small>
+    </div>
+
+    <div style="text-align: left; margin-bottom: 1rem; display: flex; align-items: center;">
+      <input type="checkbox" [(ngModel)]="userData.enableMfa" name="enableMfa" id="mfa" style="margin-right: 0.5rem; width: 1.2rem; height: 1.2rem; accent-color: var(--accent-primary);" />
+      <label for="mfa" style="font-weight: 600; font-size: 0.9rem;">Sécuriser mon compte avec 2FA (Google Authenticator)</label>
+    </div>
+
+    <div *ngIf="errorMessage" style="color: #ff4a4a; margin-bottom: 1rem; font-size: 0.9rem;">
+      {{ errorMessage }}
+    </div>
+
+    <button type="submit" class="glass-button" style="width: 100%; margin-top: 1rem;">S'inscrire</button>
+  </form>
+
+  <!-- Ecran affiché si l'inscription est réussie et MFA est activé -->
+  <div *ngIf="qrCodeUrl" class="animate-fade-in">
+    <h3 style="color: var(--accent-primary);">Inscription réussie !</h3>
+    <p style="margin: 1rem 0;">Veuillez scanner ce QR code dans votre application <strong>Google Authenticator</strong> pour lier votre compte.</p>
+    
+    <div style="background: white; padding: 1rem; border-radius: 8px; display: inline-block; margin-bottom: 1.5rem;">
+      <img [src]="getBarcodeUrl(qrCodeUrl)" alt="QR Code 2FA" style="width: 200px; height: 200px;" />
+    </div>
+    
+    <button routerLink="/login" class="glass-button" style="width: 100%;">Continuer vers la connexion</button>
+  </div>
+
+  <p *ngIf="successMessage && !qrCodeUrl" style="color: var(--accent-primary); margin-top: 1rem;">
+    {{ successMessage }} <a routerLink="/login">Se connecter</a>
+  </p>
+
+  <p *ngIf="!qrCodeUrl" style="margin-top: 2rem; font-size: 0.9rem;">
+    Déjà inscrit ? <a routerLink="/login">Connexion</a>
+  </p>
+</div>
