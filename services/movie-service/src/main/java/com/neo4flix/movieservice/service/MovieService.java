@@ -111,16 +111,15 @@ public class MovieService {
     }
 
     // Méthode helper pour exécuter les requêtes de recherche avec Neo4jClient
+    // IMPORTANT: tous les paramètres sont toujours bindés (même null), car Cypher
+    // a besoin que "$param IS NULL" soit évaluable même si la valeur est absente.
     private List<RatedMovieDto> executeQuery(String cypher, String username, String title, String genre, String year) {
-        Neo4jClient.RunnableSpec spec = neo4jClient.query(cypher);
-        
-        // Bind des paramètres (Neo4jClient ignore les binds si le paramètre n'est pas dans la query)
-        spec = spec.bind(username != null ? username : "").to("username");
-        if (title != null) spec = spec.bind(title).to("title");
-        if (genre != null) spec = spec.bind(genre).to("genre");
-        if (year != null) spec = spec.bind(year).to("year");
-
-        return spec.fetchAs(RatedMovieDto.class)
+        return neo4jClient.query(cypher)
+                .bind(username != null ? username : "").to("username")
+                .bind(title).to("title")
+                .bind(genre).to("genre")
+                .bind(year).to("year")
+                .fetchAs(RatedMovieDto.class)
                 .mappedBy((typeSystem, record) -> new RatedMovieDto(
                         record.get("id").asLong(0),
                         record.get("title").asString(null),

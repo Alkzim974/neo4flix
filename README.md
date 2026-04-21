@@ -42,8 +42,14 @@ Vous devez voir **6 conteneurs** avec le statut `Up` :
 ### Étape 4 — Accéder à l'application
 | URL | Description |
 |---|---|
-| **http://localhost** | Application Web principale |
+| **https://localhost** | Application Web sécurisée (Recommandé) |
+| **http://localhost** | Redirige automatiquement vers HTTPS |
 | **http://localhost:7474** | Neo4j Browser (visualisation des données) |
+
+> [!CAUTION]
+> **Certificat SSL Auto-signé** : Comme nous utilisons un certificat généré localement, votre navigateur affichera un avertissement de sécurité.
+> 1. Cliquez sur **Paramètres avancés**.
+> 2. Cliquez sur **Continuer vers le site localhost (non sécurisé)**.
 
 **Identifiants Neo4j Browser :**
 - Login : `neo4j`
@@ -72,8 +78,8 @@ docker compose down
 
 Oui. L'application est entièrement fonctionnelle. Voici le scénario de navigation complet :
 
-1. **Inscription** → http://localhost/register : Créer un compte avec username/email/mot de passe + QR Code 2FA
-2. **Connexion** → http://localhost/login : Login avec username, mot de passe, et code TOTP (Google Authenticator)
+1. **Inscription** → https://localhost/register : Créer un compte avec username/email/mot de passe + QR Code 2FA
+2. **Connexion** → https://localhost/login : Login avec username, mot de passe, et code TOTP (Google Authenticator)
 3. **Catalogue** → Page d'accueil : Parcourir tous les films, noter un film depuis sa fiche, ajouter à la watchlist
 4. **Recherche avancée** → Filtrer par titre, genre, et/ou année sur la page d'accueil
 5. **Profil** → http://localhost/profile : Voir les films notés (avec score), la watchlist, et les amis

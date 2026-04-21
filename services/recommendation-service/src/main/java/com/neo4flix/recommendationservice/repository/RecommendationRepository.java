@@ -23,9 +23,10 @@ public interface RecommendationRepository extends Neo4jRepository<Movie, Long> {
     // Recommandations Sociales : les films bien notés par les amis non encore vus
     @Query("MATCH (u:User {username: $username})-[:FRIENDS_WITH]->(friend:User) " +
            "MATCH (friend)-[r:RATED]->(m:Movie) " +
-           "WHERE r.score >= 4.0 AND NOT EXISTS((u)-[:RATED]->(m)) " +
-           "RETURN DISTINCT m " +
-           "ORDER BY r.score DESC LIMIT 10")
+           "WHERE r.score >= 3.0 AND NOT EXISTS((u)-[:RATED]->(m)) " +
+           "WITH m, max(r.score) AS maxScore " +
+           "RETURN m " +
+           "ORDER BY maxScore DESC LIMIT 10")
     List<Movie> getFriendRecommendations(String username);
 
     // Partage d'un film : crée la relation RECOMMENDED entre deux utilisateurs

@@ -1,11 +1,13 @@
 package com.neo4flix.userservice.service;
 
+import com.neo4flix.userservice.dto.UserSummaryDto;
 import com.neo4flix.userservice.model.User;
 import com.neo4flix.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,37 +20,45 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public UserSummaryDto getProfileSummary(String username) {
+        return toSummaryDto(getProfile(username));
+    }
+
+    public List<UserSummaryDto> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::toSummaryDto)
+                .collect(Collectors.toList());
     }
 
     public void addFriend(String currentUsername, String friendUsername) {
-        User currentUser = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("Utilisateur courant introuvable"));
-        
-        User friend = userRepository.findByUsername(friendUsername)
-                .orElseThrow(() -> new RuntimeException("Ami introuvable"));
-
-        // Vérification de ne pas s'ajouter soi-même
         if (currentUsername.equals(friendUsername)) {
             throw new RuntimeException("Vous ne pouvez pas vous ajouter vous-même");
         }
+        // Vérifie que les deux utilisateurs existent
+        userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new RuntimeException("Utilisateur courant introuvable"));
+        userRepository.findByUsername(friendUsername)
+                .orElseThrow(() -> new RuntimeException("Ami introuvable : " + friendUsername));
 
-        currentUser.getFriends().add(friend);
-        userRepository.save(currentUser);
+        // Crée la relation directement avec Cypher MERGE (évite les doublons)
+        userRepository.createFriendship(currentUsername, friendUsername);
     }
 
-    public java.util.Set<User> getFriends(String currentUsername) {
-        User currentUser = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-        return currentUser.getFriends();
+    public List<UserSummaryDto> getFriends(String currentUsername) {
+        return userRepository.findFriendsByUsername(currentUsername).stream()
+                .map(this::toSummaryDto)
+                .collect(Collectors.toList());
     }
 
     public void removeFriend(String currentUsername, String friendUsername) {
-        User currentUser = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-        
-        currentUser.getFriends().removeIf(friend -> friend.getUsername().equals(friendUsername));
-        userRepository.save(currentUser);
+        userRepository.deleteFriendship(currentUsername, friendUsername);
+    }
+
+    private UserSummaryDto toSummaryDto(User user) {
+        return UserSummaryDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .build();
     }
 }

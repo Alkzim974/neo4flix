@@ -14,6 +14,7 @@ import { RecommendationService } from '../../services/recommendation.service';
 export class RecommendationsComponent implements OnInit {
   movies: any[] = [];
   activeTab = 'personal';
+  errorMessage = '';
 
   constructor(private recommendationService: RecommendationService) {}
 
@@ -24,21 +25,22 @@ export class RecommendationsComponent implements OnInit {
   setTab(tab: string) {
     this.activeTab = tab;
     this.movies = [];
+    this.errorMessage = '';
 
     if (tab === 'personal') {
       this.recommendationService.getRecommendations().subscribe({
         next: (data) => this.movies = data,
-        error: (err) => console.error(err)
+        error: (err) => this.errorMessage = 'Erreur lors du chargement des recommandations.'
       });
     } else if (tab === 'friends') {
       this.recommendationService.getFriendRecommendations().subscribe({
         next: (data) => this.movies = data,
-        error: (err) => console.error(err)
+        error: (err) => this.errorMessage = 'Erreur API : ' + (err.error || err.message)
       });
     } else if (tab === 'shared') {
       this.recommendationService.getSharedWithMe().subscribe({
         next: (data) => this.movies = data,
-        error: (err) => console.error(err)
+        error: (err) => this.errorMessage = 'Erreur lors du chargement des films partagés.'
       });
     }
   }

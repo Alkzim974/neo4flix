@@ -1,6 +1,6 @@
 package com.neo4flix.userservice.controller;
 
-import com.neo4flix.userservice.model.User;
+import com.neo4flix.userservice.dto.UserSummaryDto;
 import com.neo4flix.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +17,13 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public ResponseEntity<User> getCurrentProfile(Authentication authentication) {
+    public ResponseEntity<UserSummaryDto> getCurrentProfile(Authentication authentication) {
         String username = authentication.getName();
-        return ResponseEntity.ok(userService.getProfile(username));
+        return ResponseEntity.ok(userService.getProfileSummary(username));
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserSummaryDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @GetMapping("/friends")
-    public ResponseEntity<java.util.Set<User>> getMyFriends(Authentication authentication) {
+    public ResponseEntity<List<UserSummaryDto>> getMyFriends(Authentication authentication) {
         return ResponseEntity.ok(userService.getFriends(authentication.getName()));
     }
 
